@@ -1,16 +1,18 @@
-import { Component, ViewChild, OnInit } from "@angular/core";
-import { AlertController, LoadingController,ModalController } from "@ionic/angular";
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { AlertController, LoadingController,ModalController } from '@ionic/angular';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
-import { Plugins } from "@capacitor/core";
-import { Router, ActivatedRoute } from "@angular/router";
-import { GoogleMapComponent } from "../../../components/google-map/google-map.component";
-import { AuthService } from "../../../services/user/auth.service";
-import * as firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
+import { Plugins } from '@capacitor/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { GoogleMapComponent } from '../../../components/google-map/google-map.component';
+import { AuthService } from '../../../services/user/auth.service';
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
 
-const { Geolocation, Storage } = Plugins;
+const {Geolocation} = Plugins;
+
 declare var google;
+
 @Component({
   selector: 'app-add-respondant-coordinates',
   templateUrl: './add-respondant-coordinates.page.html',
@@ -28,6 +30,11 @@ export class AddRespondantCoordinatesPage implements OnInit {
     lat: 0,
     lng: 0
   };
+
+  address = '';
+
+  geocoder: any ;
+
   constructor(
     private route: ActivatedRoute,
     private alertCtrl: AlertController,
@@ -35,7 +42,7 @@ export class AddRespondantCoordinatesPage implements OnInit {
     private router: Router,
     private _auth: AuthService,
     public modalCtrl: ModalController
-  ) { }
+  ) {}
   ngOnInit() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -52,21 +59,46 @@ export class AddRespondantCoordinatesPage implements OnInit {
 
    // this.setLocation();
   }
-  dismissModal() {
+
+  addLocationMarker() {
+    // it may be worth performing geocoding of the responder address from the 
+    // coordinates, this takes the state and the country level address
+    // this address value is useful in assigning responders
     if(this.map.marker){
-    let latLong = this.map.marker.position;
+      const latLong = this.map.marker.position;
+      this.geoCodeLatLng(latLong.lat(), latLong.lng()).then( result=>{
+        console.log(result);
+        var total = result.length - 2 ;
+        var formatted_address = result[total].formatted_address;
+        console.log(formatted_address);
+        this.address = formatted_address ;
+        this.dismissModal();
+      }, error=>{
+        console.log(error);
+      })
+
     this.markerlatlong.lat = latLong.lat();
     this.markerlatlong.lng = latLong.lng();
+
     }
+    //disable map
+    //this.map.disableMap();
+  }
+
+  dismissModal(){
     this.modalCtrl.dismiss({
       'dismissed': true,
-      'location' : this.markerlatlong
+      'location' : this.markerlatlong,
+      'address' : this.address
     });
+    // disable map
+    this.map.disableMap();
   }
+
   setLocation(): void {
     this.loadingCtrl
       .create({
-        message: "Setting current location..."
+        message: 'Setting current location...'
       })
       .then(overlay => {
         overlay.present();
@@ -76,7 +108,7 @@ export class AddRespondantCoordinatesPage implements OnInit {
             this.latitude = position.coords.latitude;
             this.longitude = position.coords.longitude;
             this.map.changeMarkerWithoutAni(this.latitude, this.longitude);
-            let data = {
+            const data = {
               latitude: this.latitude,
               longitude: this.longitude
             };
@@ -84,9 +116,9 @@ export class AddRespondantCoordinatesPage implements OnInit {
             this.markerlatlong.lng = this.longitude;
             this.alertCtrl
               .create({
-                header: "Map set!",
-                message: "Select Location",
-                buttons: [{ text: "Ok" }]
+                header: 'Map set!',
+                message: 'Select Location',
+                buttons: [{ text: 'Ok' }]
               })
               .then(alert => {
                 alert.present();
@@ -98,13 +130,30 @@ export class AddRespondantCoordinatesPage implements OnInit {
           }
         );
 
-        google.maps.event.addListener(this.map.map, "dragend", () => {
-          let center = this.map.map.getCenter();
+        google.maps.event.addListener(this.map.map, 'dragend', () => {
+          const center = this.map.map.getCenter();
           this.map.changeMarkerWithoutAni(center.lat(), center.lng());
         });
 
       });
   }
+
+  private geoCodeLatLng(lat, lng): Promise<any> {
+    var geocoder = new google.maps.Geocoder;
+    console.log(geocoder);
+    var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
+    return	new	Promise((resolve,	reject)	=>	{
+      geocoder.geocode({'location': latlng}, function(results, status) {
+        if (status === 'OK') {
+          resolve(results);
+        } else {
+          console.log('Geocoder failed due to: ' + status);
+          reject('Geocoder failed due to: ' + status);
+        }
+      });
+    });
+  }
+
 }
 
 

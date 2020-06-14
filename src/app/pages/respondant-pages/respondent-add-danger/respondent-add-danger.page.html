@@ -1,0 +1,33 @@
+<ion-header>
+    <ion-toolbar color="primary">
+      <ion-buttons slot="start" color="secondary">
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <ion-title>Add Danger</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <app-google-map apiKey="AIzaSyBExZNShIaWE9RKXq_oqsAgyaYcYRhYGB8"></app-google-map>
+</ion-content>
+
+<ion-footer>
+
+    <form (ngSubmit)="addDanger()">
+        <div class="emerge-form-line">
+            <ion-item>
+                <ion-select name="dangerType" [(ngModel)]="dangerInfo.dangerType" placeholder="Select Type" required>
+                    <ion-select-option value="Robbery">Robbery</ion-select-option>
+                    <ion-select-option value="Pot holes">Pot Holes</ion-select-option>
+                    <ion-select-option value="Road block">Road Block</ion-select-option>
+                    <ion-select-option value="Under contruction">Under Contruction</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>Description</ion-label>
+                <ion-textarea name="description" [(ngModel)]="dangerInfo.description" required></ion-textarea>
+            </ion-item>
+        </div>
+        <ion-button expand="full" type="submit">Submit Danger</ion-button>
+    </form>
+</ion-footer>

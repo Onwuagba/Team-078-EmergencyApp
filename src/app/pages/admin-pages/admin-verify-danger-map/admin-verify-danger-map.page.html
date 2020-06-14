@@ -1,8 +1,4 @@
-<ion-header>
-    <ion-toolbar>
-        <ion-title>Select Danger Location</ion-title>
-    </ion-toolbar>
-</ion-header>
+<app-admin-menu></app-admin-menu>
 
 <ion-content>
     <app-google-map apiKey="AIzaSyBExZNShIaWE9RKXq_oqsAgyaYcYRhYGB8"></app-google-map>
@@ -15,9 +11,9 @@
             <ion-item>
                 <ion-select name="dangerType" [(ngModel)]="dangerInfo.dangerType" placeholder="Select Type" required>
                     <ion-select-option value="Robbery">Robbery</ion-select-option>
-                    <ion-select-option value="pot_holes">Pot Holes</ion-select-option>
-                    <ion-select-option value="road_block">Road Block</ion-select-option>
-                    <ion-select-option value="under_contruction">Under Contruction</ion-select-option>
+                    <ion-select-option value="Pot holes">Pot Holes</ion-select-option>
+                    <ion-select-option value="Road block">Road Block</ion-select-option>
+                    <ion-select-option value="Under contruction">Under Contruction</ion-select-option>
                 </ion-select>
             </ion-item>
             <ion-item>

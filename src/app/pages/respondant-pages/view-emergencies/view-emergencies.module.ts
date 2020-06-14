@@ -1,57 +1,32 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { IonicModule } from '@ionic/angular';
-
+import { IonicModule } from '@ionic/angular';import { RespondantMenuModule } from '../../../components/respondant.components.module'
 import { ViewEmergenciesPageRoutingModule } from './view-emergencies-routing.module';
-
 import { ViewEmergenciesPage } from './view-emergencies.page';
 import { EmergencyDetailsPage } from '../emergency-details/emergency-details.page';
+import { RespondentViewRequestOnMapPage } from '../respondent-view-request-on-map/respondent-view-request-on-map.page';
+import { ViewDangersPageModule } from '../../victim-pages/view-dangers/view-dangers.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ViewEmergenciesPageRoutingModule
+    RespondantMenuModule,
+    ViewEmergenciesPageRoutingModule,
+    ViewDangersPageModule
   ],
-  declarations: [ViewEmergenciesPage, EmergencyDetailsPage],
-  entryComponents: [EmergencyDetailsPage] 
+  declarations: [ViewEmergenciesPage, EmergencyDetailsPage,RespondentViewRequestOnMapPage],
+  entryComponents: [EmergencyDetailsPage,RespondentViewRequestOnMapPage]
 })
 export class ViewEmergenciesPageModule {}
 
 
 export const emergencyList = [
   {
-    'Number': '093090',
-    'Date': 'Mon 3 Jun, 2020',
-    'Location': 'Anambra'
+    Number: '093090',
+    Date: 'Mon 3 Jun, 2020',
+    Location: 'Anambra'
   }
 ];
-
-
-
-
-// @Component({
-//   selector: 'modal-example',
-//   templateUrl: 'modal-example.html',
-//   styleUrls: ['./modal-example.css']
-// })
-// export class ModalExample {
-//   constructor(public modalController: ModalController) {
-
-//   }
-
-//   async presentModal() {
-//     const modal = await this.modalController.create({
-//       component: ModalPage,
-//       componentProps: {
-//         'firstName': 'Douglas',
-//         'lastName': 'Adams',
-//         'middleInitial': 'N'
-//       }
-//     });
-//     return await modal.present();
-//   }
