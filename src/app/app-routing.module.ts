@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { LoginGuard } from './services/user/login.guard';
 
 const routes: Routes = [
   {
@@ -28,7 +29,8 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/respondant-pages/respondant-login/respondant-login.module').then(
         m => m.RespondantLoginPageModule
-      )
+      ),
+    canActivate: [LoginGuard]
   },
 
   {
@@ -188,8 +190,14 @@ const routes: Routes = [
   },
   {
     path: 'victim-request-history',
-    loadChildren: () => import('./pages/victim-pages/victim-request-history/victim-request-history.module').then( m => m.VictimRequestHistoryPageModule)
+    loadChildren: () => import('./pages/victim-pages/victim-request-history/victim-request-history.module').then(m => m.VictimRequestHistoryPageModule)
+  },
+  {
+    path: 'respondent-history',
+    loadChildren: () => import('./pages/respondant-pages/respondent-history/respondent-history.module').then(m => m.RespondentHistoryPageModule)
   }
+
+
 
 
 

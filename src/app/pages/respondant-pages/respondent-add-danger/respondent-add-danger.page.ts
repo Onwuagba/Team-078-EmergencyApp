@@ -1,8 +1,8 @@
-import { Component, ViewChild, OnInit  } from '@angular/core';
+import { Component, ViewChild, OnInit, HostListener, OnDestroy  } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { FormGroup } from '@angular/forms';
 import { Plugins } from '@capacitor/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterEvent } from '@angular/router';
 import { GoogleMapComponent } from '../../../components/google-map/google-map.component';
 import { AuthService } from '../../../services/user/auth.service';
 import * as firebase from 'firebase/app';
@@ -16,7 +16,7 @@ declare var google;
   templateUrl: './respondent-add-danger.page.html',
   styleUrls: ['./respondent-add-danger.page.scss'],
 })
-export class RespondentAddDangerPage implements OnInit {
+export class RespondentAddDangerPage implements OnInit ,OnDestroy{
   addDangerForm: FormGroup;
   @ViewChild(GoogleMapComponent, { static: false })
   map: GoogleMapComponent;
@@ -40,14 +40,16 @@ export class RespondentAddDangerPage implements OnInit {
     private loadingCtrl: LoadingController,
     private router: Router,
     private _auth: AuthService
-  ) { }
+  ) {
+
+   }
 
   ngOnInit() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.map.init().then(
-          res => {
-            this.setLocation();
+          position => {
+            this.setLocation(position);
           },
           err => {
             console.log(err);
@@ -55,6 +57,11 @@ export class RespondentAddDangerPage implements OnInit {
         );
       }
     });
+  }
+  @HostListener('unloaded')
+  ngOnDestroy() {
+    this.map.disableMap();
+    console.log('Items destroyed');
   }
 
   async addDanger(): Promise<void> {
@@ -106,16 +113,16 @@ export class RespondentAddDangerPage implements OnInit {
     }
   }
 
-  setLocation(): void {
+  setLocation(position): void {
     this.loadingCtrl
       .create({
         message: 'Setting current location...'
       })
       .then(overlay => {
         overlay.present();
-        Geolocation.getCurrentPosition().then(
-          position => {
-            overlay.dismiss();
+        // Geolocation.getCurrentPosition().then(
+        //   position => {
+            
             this.latitude = position.coords.latitude;
             this.longitude = position.coords.longitude;
             this.map.changeMarkerWithoutAni(this.latitude, this.longitude);
@@ -135,12 +142,13 @@ export class RespondentAddDangerPage implements OnInit {
               .then(alert => {
                 alert.present();
               });
-          },
-          err => {
-            console.log(err);
-            overlay.dismiss();
-          }
-        );
+              overlay.dismiss();
+        //   },
+        //   err => {
+        //     console.log(err);
+        //     overlay.dismiss();
+        //   }
+        // );
 
         google.maps.event.addListener(this.map.map, 'dragend', () => {
           const center = this.map.map.getCenter();

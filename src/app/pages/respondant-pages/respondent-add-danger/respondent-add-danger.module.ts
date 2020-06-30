@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
+import { RespondantMenuModule } from '../../../components/respondant.components.module';
+
 import { RespondentAddDangerPageRoutingModule } from './respondent-add-danger-routing.module';
 
 import { RespondentAddDangerPage } from './respondent-add-danger.page';
@@ -16,6 +18,7 @@ import { ViewDangersPageModule } from '../../victim-pages/view-dangers/view-dang
     FormsModule,
     IonicModule,
     RespondentAddDangerPageRoutingModule,
+    RespondantMenuModule,
     ViewDangersPageModule
   ],
   declarations: [RespondentAddDangerPage],

@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Location } from "@angular/common";
-import { Router } from "@angular/router";
+import { MenuController } from "@ionic/angular";
+import { Router, RouterEvent } from "@angular/router";
 
 @Component({
   selector: "app-victim-menu",
@@ -11,31 +12,73 @@ export class VictimMenuComponent implements OnInit {
   // properties
   routerlocation: string = this.router.url;
   menuItem: string[];
-  menuSegment: string
+  menuSegment: string;
+  selectedPath: string = "";
+  isShowDiv: boolean = false;
 
-  constructor(private location: Location, private router: Router) {
-    // this is reserved incase we add more
-    //pages, switch method will be used to
-    //display content based on user's visit
-    this.menuItem = [
-      "admin-dashboard",
-      "welcom-page",
-      "respondant-login",
-      "respondant-dashboard",
-      "admin-sign-up",
-      "admin-login",
-      "admin-add-respondant",
-      "splash-page",
-      "get-help",
-      "user-welcome",
-      "find-unit",
-      "unit-alert",
-      "view-unit",
-      "user-location",
-    ];
+  pages = [
+    {
+      title: "Get Help",
+      url: "/get-help",
+      icon: "medkit-outline"
+    },
+    {
+      title: "Find Unit",
+      url: "/find-unit",
+      icon: "help-buoy-outline"
+    },
+    {
+      title: "Request History",
+      url: "/victim-request-history",
+      icon: "boat-outline"
+    }
+    ,
+    {
+      title: "View Dangers",
+      url: "/view-dangers",
+      icon: "flame-outline"
+    }
+  ];
+
+  // tempPage = [
+  //   {
+  //     title: "Find Unit",
+  //     url: "/find-unit",
+  //     icon: "help-buoy-outline"
+  //   },
+  //   {
+  //     title: "View Dangers",
+  //     url: "/view-dangers",
+  //     icon: "flame-outline"
+  //   },
+  // ];
+
+
+  constructor(
+    private location: Location,
+    private menu: MenuController,
+    private router: Router) {
+    this.router.events.subscribe(
+      (event: RouterEvent) => {
+        this.selectedPath = event.url;
+      }
+    );
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+  }
+
+  // ionDidClose() {
+  //   !this.isShowDiv
+  // }
+
+  toggleDisplayDiv() {
+    this.menu.toggle('main-menu');
+  }
+  // toggleDisplayDiv() {
+  //   this.isShowDiv = !this.isShowDiv;
+  // }
 
   goBack() {
     this.location.back();
@@ -50,15 +93,28 @@ export class VictimMenuComponent implements OnInit {
 
   // This is used to make the logo dynamic
   titleUpdate() {
-    return this.routerlocation === "/get-help" ? "Get Help" : "Find Unit";
+    if (this.routerlocation === "/get-help") {
+      return "Get Help"
+    }
+
+    if (this.routerlocation === "/find-unit") {
+      return "Find Unit"
+    }
+    if (this.routerlocation === "/view-dangers") {
+      return "Dangers"
+    }
+    if (this.routerlocation === "/victim-request-history") {
+      return "Request History"
+    }
+
   }
 
   // triggers wen menu button is clicked
   flipSegment(): void {
-    if (this.menuSegment === 'get-help') {
-      this.menuSegment = 'find-unit';
+    if (this.menuSegment === "get-help") {
+      this.menuSegment = "find-unit";
     } else {
-      this.menuSegment = 'get-help';
+      this.menuSegment = "get-help";
     }
   }
 }

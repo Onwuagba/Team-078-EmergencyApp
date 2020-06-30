@@ -52,6 +52,7 @@ export class VictimConfirmLocOnMapPage implements OnInit {
         this.userInfo.phone_number = this.data.phone_number;
         this.userInfo.victim_id = this.data.victim_id;
       } else {
+       // this.map.disableMap();
         this.router.navigate(['/get-help']);
       }
     });
@@ -61,8 +62,8 @@ export class VictimConfirmLocOnMapPage implements OnInit {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.map.init().then(
-          res => {
-            this.setLocation();
+          position => {
+            this.setLocation(position);
           },
           err => {
             console.log(err);
@@ -92,18 +93,20 @@ export class VictimConfirmLocOnMapPage implements OnInit {
       this._auth.addRequest(this.userInfo.victim_id,request_ref,this.userInfo.emmergency,
         this.userInfo.latLong.lat,this.userInfo.latLong.long,this.userInfo.address,
         "",responder_email,this.userInfo.phone_number, formatted_address)
-      .then( () => {
+      .then( async () => {
           //alert all units necessary of this request
           const navigationExtras: NavigationExtras = {
             state: {
               request_ref: request_ref
             }
           };
-          this.requestService.assignResponders(this.userInfo.victim_id,request_ref,this.userInfo.emmergency,
+          await this.requestService.assignResponders(this.userInfo.victim_id,request_ref,this.userInfo.emmergency,
             this.userInfo.latLong.lat,this.userInfo.latLong.long,this.userInfo.address,
             "",this.userInfo.phone_number, formatted_address)
-          .then( () => {
+          .then( async (result) => {
+            await result;
             this.loading.dismiss().then(() => { 
+              this.map.disableMap();
               this.router.navigate(["/unit-alert"],navigationExtras);
             });
           }, error => { 
@@ -122,16 +125,16 @@ export class VictimConfirmLocOnMapPage implements OnInit {
     })   
   }
 
-  setLocation(): void {
+  setLocation(position): void {
     this.loadingCtrl
       .create({
         message: 'Setting current location...'
       })
       .then(overlay => {
         overlay.present();
-        Geolocation.getCurrentPosition().then(
-          position => {
-            overlay.dismiss();
+        // Geolocation.getCurrentPosition().then(
+        //   position => {
+           
             this.latitude = position.coords.latitude;
             this.longitude = position.coords.longitude;
             this.map.changeMarkerWithoutAni(this.latitude, this.longitude);
@@ -151,12 +154,13 @@ export class VictimConfirmLocOnMapPage implements OnInit {
               .then(alert => {
                 alert.present();
               });
-          },
-          err => {
-            console.log(err);
-            overlay.dismiss();
-          }
-        );
+              overlay.dismiss();
+        //   },
+        //   err => {
+        //     console.log(err);
+        //     overlay.dismiss();
+        //   }
+        // );
 
         google.maps.event.addListener(this.map.map, 'dragend', () => {
           const center = this.map.map.getCenter();

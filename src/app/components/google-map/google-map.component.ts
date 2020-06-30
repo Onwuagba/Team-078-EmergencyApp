@@ -40,11 +40,11 @@ export class GoogleMapComponent {
   public init(): Promise<any> {
 
     return new Promise((resolve, reject) => {
-      if (typeof (google) === 'undefined') {
+      // if (typeof (google) === 'undefined') {
         this.loadSDK().then(() => {
-          this.initMap().then(() => {
+          this.initMap().then((position) => {
             this.enableMap();
-            resolve(true);
+            resolve(position);
           }, (err) => {
             this.disableMap();
             reject(err);
@@ -53,9 +53,11 @@ export class GoogleMapComponent {
           this.firstLoadFailed = true;
           reject(err);
         });
-      } else {
-        reject('Google	maps	already	initialised');
-      }
+
+      // } else {
+      //   reject('Google	maps	already	initialised');
+      // }
+
     });
 
   }
@@ -97,25 +99,26 @@ export class GoogleMapComponent {
 
   private injectSDK(): Promise<any> {
     return new Promise((resolve, reject) => {
-      window['mapInit'] = () => {
+     // window['mapInit'] = () => {
         this.mapsLoaded = true;
         resolve(true);
-      }
-      const script = this.renderer.createElement('script');
-      script.id = 'googleMaps';
+      // }
+      // const script = this.renderer.createElement('script');
+      // script.id = 'googleMaps';
 
-      if (this.apiKey) {
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + this.apiKey + '&callback=mapInit&libraries=geometry,places';
-      } else {
-        script.src = 'https://maps.googleapis.com/maps/api/js?callback=mapInit';
-      }
-      this.renderer.appendChild(this._document.body, script);
+      // if (this.apiKey) {
+      //   script.src = 'https://maps.googleapis.com/maps/api/js?key=' + this.apiKey + '&callback=mapInit&libraries=geometry,places';
+      // } else {
+      //   script.src = 'https://maps.googleapis.com/maps/api/js?callback=mapInit';
+      // }
+      // this.renderer.appendChild(this._document.body, script);
     });
   }
 
   private initMap(): Promise<any> {
     return new Promise((resolve, reject) => {
-      Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 }).then((position) => {
+     // resolve("true");
+      Geolocation.getCurrentPosition({  enableHighAccuracy: false,  timeout: 5000 }).then((position) => {
         console.log(position);
         // let	latLng	=	new	google.maps.LatLng(46.064941,13.230720);
         const latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -127,6 +130,8 @@ export class GoogleMapComponent {
         //resolve the latLng to be used to get the current position
         resolve(position);
       }, (err) => {
+
+        
         console.log(err);
         reject('Could	not	initialise map');
       });
@@ -149,8 +154,8 @@ export class GoogleMapComponent {
   }
 
   disableMap(): void {
-    this.connectionAvailable = false;
-    google = undefined;
+    //this.connectionAvailable = false;
+    //google = undefined;
   }
 
   enableMap(): void {
@@ -203,12 +208,12 @@ export class GoogleMapComponent {
 
       //loop through unit location and display markers on the map
       unitLocation.forEach((marker) => {
-        var image = 'http://maps.google.com/mapfiles/ms/micons/red-dot.png';
+        var image = 'https://maps.google.com/mapfiles/ms/micons/red-dot.png';
         if (marker['unit_type'] == "Fire") {
-          image = 'http://maps.google.com/mapfiles/ms/micons/firedept.png';
+          image = 'https://maps.google.com/mapfiles/ms/micons/firedept.png';
         }
         if (marker['unit_type'] == "Accident") {
-          image = 'http://maps.google.com/mapfiles/ms/micons/hospitals.png';
+          image = 'https://maps.google.com/mapfiles/ms/micons/hospitals.png';
         }
 
         markerInfo = new google.maps.Marker({
@@ -302,7 +307,7 @@ export class GoogleMapComponent {
     var markerInfo;
     //console.log("Auth Details", markers);
     markers.forEach((marker) => {
-      var image = 'http://maps.google.com/mapfiles/kml/pal3/icon33.png';
+      var image = 'https://maps.google.com/mapfiles/kml/pal3/icon33.png';
       markerInfo = new google.maps.Marker({
         position: new google.maps.LatLng(marker['location']['lat'], marker['location']['lng']),
         map: this.map,
@@ -332,7 +337,7 @@ export class GoogleMapComponent {
     var markerInfo;
     console.log("Auth Details", markers);
     markers.forEach((marker) => {
-      var image = 'http://maps.google.com/mapfiles/kml/pal3/icon33.png';
+      var image = 'https://maps.google.com/mapfiles/kml/pal3/icon33.png';
       markerInfo = new google.maps.Marker({
         position: new google.maps.LatLng(marker['location']['lat'], marker['location']['lng']),
         map: this.map,

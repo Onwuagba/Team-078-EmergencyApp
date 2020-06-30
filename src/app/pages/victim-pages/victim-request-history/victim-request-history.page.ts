@@ -21,18 +21,17 @@ export class VictimRequestHistoryPage implements OnInit {
   constructor(private modalController: ModalController, public loadingCtrl: LoadingController,
     public alertCtrl: AlertController) {
     
-    //get a list of all emergencie sassigned to this particular responder
     firebase.auth().onAuthStateChanged(async user => {
       this.loading = await this.loadingCtrl.create();
         await this.loading.present();
-
+       //user is active
       if (user) {
-        //user is active
+        //fetch all request by for this user
         firebase.firestore().collection('request')
           .where('victim_id', '==', user.uid)
           .get().
           then(result => {
-            //here we get the profile of the responder
+            //iterate through each request
             result.forEach(doc => {
               let data = {
                 id: doc.id,
@@ -61,6 +60,9 @@ export class VictimRequestHistoryPage implements OnInit {
             });
             console.log(error);
           });//end profile query
+          
+      }else{
+      this.loading.dismiss();
       }
     });
   }

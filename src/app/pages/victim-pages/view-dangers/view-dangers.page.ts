@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, NgZone } from '@angular/core';
+import { Component, ViewChild, OnInit, NgZone, OnDestroy, HostListener } from '@angular/core';
 import	{	AlertController,	LoadingController	}	from	'@ionic/angular';
 import	{	Plugins	}	from	'@capacitor/core';
 import	{	GoogleMapComponent	}	from	'../../../components/google-map/google-map.component';
@@ -18,7 +18,7 @@ declare var google;
   templateUrl: './view-dangers.page.html',
   styleUrls: ['./view-dangers.page.scss'],
 })
-export class ViewDangersPage implements OnInit {
+export class ViewDangersPage implements OnInit ,OnDestroy{
 
   @ViewChild(GoogleMapComponent, {static: false}) map: GoogleMapComponent;
   @ViewChild(GooglePlacesComponent, {static: false}) places: GooglePlacesComponent;
@@ -51,8 +51,8 @@ export class ViewDangersPage implements OnInit {
           this._auth.getDangersLocation().then(async (result) => {
             this.loading = await this.loadingCtrl.create();
             await this.loading.present();
-            this.locations = await result;
-            this.loadDangers();
+            this.locations = result;
+            this.loadDangers(res);
             console.log("Info", result);
             this.loading.dismiss();
           }).catch((error) => {
@@ -68,13 +68,17 @@ export class ViewDangersPage implements OnInit {
       }
     });
   }
-
-  loadDangers():	void	{
+  @HostListener('unloaded')
+  ngOnDestroy() {
+    this.map.disableMap();
+    console.log('Items destroyed');
+  }
+  loadDangers(res):	void	{
     this.loadingCtrl.create({
       message:	'Setting current location...'
     }).then((overlay)	=>	{
         overlay.present();
-        Geolocation.getCurrentPosition().then((position)	=>	{
+        // Geolocation.getCurrentPosition().then((position)	=>	{
             overlay.dismiss();
             this.map.victimDisplayMultipleMarkers(this.locations);
             this.alertCtrl.create({
@@ -84,10 +88,10 @@ export class ViewDangersPage implements OnInit {
             }).then((alert)	=>	{
               alert.present();
             });
-        },	(err)	=>	{
-          console.log(err);
-          overlay.dismiss();
-        });
+        // },	(err)	=>	{
+        //   console.log(err);
+        //   overlay.dismiss();
+        // });
     });
   }
 
